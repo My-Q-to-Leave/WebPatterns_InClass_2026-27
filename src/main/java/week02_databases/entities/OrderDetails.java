@@ -1,5 +1,7 @@
 package week02_databases.entities;
 
+import java.sql.*;
+
 public class OrderDetails {
     private int orderNumber;
     private String productCode;
@@ -58,5 +60,57 @@ public class OrderDetails {
 
     public int getOrderLineNumber() {
         return orderLineNumber;
+    }
+
+    public static class Product {
+        static void main() {
+            //LOAD DRIVER (Class.forName())
+
+            // Create variables to hold database details
+            String driver = "com.mysql.cj.jdbc.Driver";
+            String url = "jdbc:mysql://127.0.0.1:3306/classicmodels";
+            String username = "root";
+            String password = "";
+
+            //Load driver
+            try {
+                Class.forName(driver);
+
+
+                //Connect to database
+                try(Connection conn = DriverManager.getConnection(url, username, password)) {
+
+
+                    //Prepare statement
+                    String sql = "SELECT * FROM products";
+                    try(PreparedStatement ps = conn.prepareStatement(sql)) {
+
+
+                        //Run query
+                        ResultSet rs = ps.executeQuery();
+
+                        //Process results
+                        while (rs.next()) {
+                            System.out.println(rs.getString("productCode") + " | " +
+                                    rs.getString("productName") + " | " +
+                                    rs.getString("productLine") + " | " +
+                                    rs.getString("productScale") + " | " +
+                                    rs.getString("productVendor") + " | " +
+                                    rs.getString("productDescription") + " | " +
+                                    rs.getInt("quantityInStock") + " | " +
+                                    rs.getDouble("buyPrice") + " | " +
+                                    rs.getDouble("MSRP"));
+                        }
+                    }
+                }catch(SQLException e) {
+                    System.out.println("Cannot establish a connection to " + url);
+                }
+
+            } catch (ClassNotFoundException e) {
+                System.out.println("No driver files found - please check dependencies.");
+            }
+
+
+        }
     }
 }
